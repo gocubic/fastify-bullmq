@@ -1,9 +1,9 @@
+import { Server, IncomingMessage, ServerResponse } from 'http';
+import fastify, { FastifyInstance } from 'fastify';
 import { ConnectionOptions, Queue } from 'bullmq';
 import { createBullBoard } from '@bull-board/api';
 import { BullMQAdapter } from '@bull-board/api/bullMQAdapter';
 import { FastifyAdapter } from '@bull-board/fastify';
-import fastify, { FastifyInstance, FastifyRequest } from 'fastify';
-import { Server, IncomingMessage, ServerResponse } from 'http';
 import { env } from './env';
 
 interface AddJobQueryString {
@@ -18,24 +18,23 @@ const connection: ConnectionOptions = {
   password: env.REDISPASSWORD,
 };
 
-// Dont forget to add your new queue to the createBullBoard queues array
 const run = async () => {
-  const activitiesProducerQueue = new Queue('api:activities-producer', {
-    connection,
-  });
-  const shipmentWorkflowsQueue = new Queue('api:shipment-workflows', {
-    connection,
-  });
+  const processorsName: string[] = [
+    'activities-producer',
+    'shipment-workflows',
+    'integrations',
+  ];
+
+  const queues = processorsName.map(
+    (name) => new Queue(`api:${name}`, { connection })
+  );
 
   const server: FastifyInstance<Server, IncomingMessage, ServerResponse> =
     fastify();
 
   const serverAdapter = new FastifyAdapter();
   createBullBoard({
-    queues: [
-      new BullMQAdapter(activitiesProducerQueue),
-      new BullMQAdapter(shipmentWorkflowsQueue),
-    ],
+    queues: queues.map((queue) => new BullMQAdapter(queue)),
     serverAdapter,
   });
   serverAdapter.setBasePath('/');
