@@ -22,7 +22,8 @@ const run = async () => {
   const processorsName: string[] = [
     'activities-producer',
     'shipment-workflows',
-    'integrations',
+    'integration-inbound-inventory-shipping-plans',
+    'integration-products',
   ];
 
   const queues = processorsName.map(
