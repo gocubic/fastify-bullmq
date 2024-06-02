@@ -22,7 +22,8 @@ const run = async () => {
   const processorsName: string[] = [
     'activities-producer',
     'shipment-workflows',
-    'integration-inbound-inventory-shipping-plans',
+    'integrations',
+    'integration-shipments',
     'integration-products',
   ];
 
