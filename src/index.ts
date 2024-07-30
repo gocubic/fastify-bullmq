@@ -25,6 +25,7 @@ const run = async () => {
     'integrations',
     'integration-shipments',
     'integration-products',
+    'client-quotes',
   ];
 
   const queues = processorsName.map(
